@@ -324,18 +324,33 @@ function getLast7Days() {
   return days;
 }
 
-function sortDaysForDisplay(days) {
-  const order = {
-    Sat: 0,
-    Mon: 1,
-    Tue: 2,
-    Wed: 3,
-    Thu: 4,
-    Fri: 5,
-    Sun: 6,
-  };
+function getCurrentWeekDays() {
+  const days = [];
+  const today = new Date();
+  today.setHours(12, 0, 0, 0);
+  const start = new Date(today);
+  const daysSinceSaturday = (today.getDay() + 1) % 7;
+  start.setDate(today.getDate() - daysSinceSaturday);
 
-  return [...days].sort((a, b) => order[a.dayLabel] - order[b.dayLabel]);
+  for (let offset = 0; offset < 7; offset += 1) {
+    const day = new Date(start);
+    day.setDate(start.getDate() + offset);
+    const key = getDateKey(day);
+    const isFuture = day > today;
+    const analysis = isFuture ? null : getAnalysesForDate(key)[0] || null;
+
+    days.push({
+      key,
+      shortLabel: day.toLocaleDateString("en-US", { weekday: "short" }).slice(0, 1),
+      dayLabel: day.toLocaleDateString("en-US", { weekday: "short" }),
+      total: isFuture ? 0 : getTotalForDate(key),
+      hydrated: isFuture ? false : didHitHydrationTarget(key),
+      analysis,
+      isFuture,
+    });
+  }
+
+  return days;
 }
 
 function didHitHydrationTarget(dateKey) {
@@ -595,18 +610,24 @@ function analyzeCurrentPhoto() {
 }
 
 function renderWeekChart() {
-  const last7Days = sortDaysForDisplay(getLast7Days());
+  const last7Days = getCurrentWeekDays();
 
   elements.weekChart.innerHTML = last7Days
     .map((day) => {
       const fillHeight = Math.min((day.total / state.goal) * 100, 100);
       const completeClass = day.hydrated ? "complete" : "";
+      const futureClass = day.isFuture ? "future" : "";
+      const barHeight = day.isFuture || day.total === 0 ? 0 : Math.max(fillHeight, 8);
+      const dayAmountLabel = day.isFuture ? "--" : `${day.total}oz`;
+      const ariaLabel = day.isFuture
+        ? `${day.dayLabel}: upcoming`
+        : `${day.dayLabel}: ${day.total} ounces`;
 
       return `
-        <div class="day-bar" aria-label="${day.dayLabel}: ${day.total} ounces">
-          <div class="day-total">${day.total}oz</div>
+        <div class="day-bar ${futureClass}" aria-label="${ariaLabel}">
+          <div class="day-total">${dayAmountLabel}</div>
           <div class="bar-shell">
-            <div class="bar-fill ${completeClass}" style="height:${Math.max(fillHeight, 8)}%"></div>
+            <div class="bar-fill ${completeClass}" style="height:${barHeight}%"></div>
           </div>
           <div class="day-label">${day.shortLabel}</div>
         </div>
@@ -616,13 +637,13 @@ function renderWeekChart() {
 }
 
 function renderStreakCalendar() {
-  const last7Days = sortDaysForDisplay(getLast7Days());
+  const last7Days = getCurrentWeekDays();
 
   elements.streakCalendar.innerHTML = last7Days
     .map(
       (day) => `
         <div class="streak-day" aria-label="${day.dayLabel} ${day.hydrated ? "complete" : "not complete"}">
-          <span class="streak-dot ${day.hydrated ? "filled" : ""}"></span>
+          <span class="streak-dot ${day.hydrated ? "filled" : ""} ${day.isFuture ? "future" : ""}"></span>
           <span class="streak-label">${day.shortLabel}</span>
         </div>
       `
@@ -639,14 +660,18 @@ function renderLeaderboard() {
     .slice(0, 4)
     .map(
       (entry) => `
-        <div class="leaderboard-row ${entry.name === "You" ? "current-user" : ""}">
+        <button class="leaderboard-row ${entry.name === "You" ? "current-user" : ""}" type="button" data-member="${entry.name}">
           <span class="leaderboard-rank">#${entry.rank}</span>
           <span class="leaderboard-name">${entry.name}</span>
           <span class="leaderboard-score">${entry.score}</span>
-        </div>
+        </button>
       `
     )
     .join("");
+
+  elements.leaderboardList.querySelectorAll(".leaderboard-row").forEach((row) => {
+    row.addEventListener("click", () => setActiveTab("history"));
+  });
 }
 
 function renderEntries() {

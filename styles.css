@@ -101,14 +101,6 @@ label {
   z-index: 1;
 }
 
-.phone-notch {
-  width: 36%;
-  height: 28px;
-  border-radius: 0 0 18px 18px;
-  background: #0d2540;
-  margin: 0 auto 18px;
-}
-
 .phone-header,
 .section-heading,
 .entry-row,
@@ -478,6 +470,13 @@ label {
   box-shadow: 0 6px 12px rgba(23, 151, 230, 0.2);
 }
 
+.streak-dot.future {
+  background: rgba(255, 255, 255, 0.42);
+  border-style: dashed;
+  border-color: rgba(23, 151, 230, 0.18);
+  box-shadow: none;
+}
+
 .streak-label {
   font-size: 0.72rem;
   color: var(--muted);
@@ -491,9 +490,25 @@ label {
 }
 
 .leaderboard-row {
+  width: 100%;
+  border: 1px solid transparent;
   padding: 10px 12px;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.68);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.leaderboard-row:hover,
+.leaderboard-row:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(23, 151, 230, 0.24);
+  box-shadow: 0 10px 18px rgba(23, 151, 230, 0.08);
+  outline: none;
 }
 
 .leaderboard-row.current-user {
@@ -688,6 +703,20 @@ label {
   background: linear-gradient(180deg, #8de3b6, var(--success));
 }
 
+.day-bar.future .bar-shell {
+  background: linear-gradient(180deg, rgba(13, 37, 64, 0.03), rgba(13, 37, 64, 0.015));
+  border: 1px dashed rgba(23, 151, 230, 0.16);
+}
+
+.day-bar.future .bar-fill {
+  display: none;
+}
+
+.day-bar.future .day-total,
+.day-bar.future .day-label {
+  color: rgba(73, 100, 124, 0.5);
+}
+
 .day-label,
 .day-total {
   font-size: 0.74rem;
@@ -746,21 +775,58 @@ label {
 @media (max-width: 520px) {
   .app-shell {
     width: min(100%, calc(100% - 20px));
+    padding: 12px 0 20px;
   }
 
   .phone {
-    border-radius: 30px;
-    padding: 14px 14px 20px;
+    width: 100%;
+    border-radius: 28px;
+    padding: 12px 12px 18px;
   }
 
   .hero-card {
     grid-template-columns: 1fr;
   }
 
+  .hero-card-primary {
+    min-height: 188px;
+  }
+
+  .hero-inline-topline {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .tab-bar {
+    gap: 6px;
+    padding: 5px;
+    border-radius: 16px;
+  }
+
+  .tab-button {
+    min-height: 44px;
+    padding: 10px 6px;
+    font-size: 0.84rem;
+  }
+
   .stats-grid,
   .quick-add-grid,
   .quick-add-grid-single {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .stat-card {
+    min-height: 110px;
+  }
+
+  .streak-calendar,
+  .week-chart {
+    gap: 6px;
+  }
+
+  .bar-shell {
+    min-height: 80px;
   }
 
   .analysis-topline,
