@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RAIN Hydration Check</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="phone-stage" aria-label="RAIN hydration checker app preview">
+        <div class="phone">
+          <div class="phone-notch"></div>
+
+          <nav class="tab-bar" aria-label="App sections">
+            <button class="tab-button active" type="button" data-tab="today">Today</button>
+            <button class="tab-button" type="button" data-tab="scan">Scan</button>
+            <button class="tab-button" type="button" data-tab="track">Track</button>
+            <button class="tab-button" type="button" data-tab="history">History</button>
+          </nav>
+
+          <input
+            id="photo-input"
+            class="sr-only"
+            type="file"
+            accept="image/*,.heic,.heif,.jpeg,.jpg,.png,.webp"
+          />
+
+          <section class="tab-panel active" data-panel="today">
+            <section class="hero-card hero-card-primary">
+              <div class="hero-inline-topline">
+                <h2 id="today-label">Today</h2>
+                <button id="reset-day" class="ghost-button ghost-button-on-hero" type="button">
+                  Reset day
+                </button>
+              </div>
+            </section>
+
+            <section class="stats-grid" aria-label="Hydration stats">
+              <article class="stat-card stat-card-primary">
+                <p>RAINs Drank</p>
+                <strong><span id="consumed-rains">0</span> / <span id="goal-rains">6</span></strong>
+                <span class="stat-meta">Daily hydration progress</span>
+                <button id="quick-log-today" class="quick-action-button" type="button" aria-label="Log one RAIN">
+                  <i class="bi bi-droplet-fill quick-action-icon" aria-hidden="true"></i>
+                  <span>Quick log</span>
+                </button>
+              </article>
+              <article class="stat-card stat-card-result">
+                <p>Latest result</p>
+                <strong id="analysis-status">No scan</strong>
+                <span class="stat-meta">Most recent scan</span>
+                <button id="quick-scan-today" class="quick-action-button" type="button" aria-label="Go to scan">
+                  <i class="bi bi-camera-fill quick-action-icon" aria-hidden="true"></i>
+                  <span>Scan</span>
+                </button>
+              </article>
+              <article class="stat-card stat-card-secondary stat-card-span">
+                <div class="streak-header">
+                  <div>
+                    <p>Streak</p>
+                    <strong id="streak-days">0 days</strong>
+                  </div>
+                  <span class="stat-meta">This week</span>
+                </div>
+                <div id="streak-calendar" class="streak-calendar" aria-label="Weekly hydration streak"></div>
+              </article>
+              <article class="stat-card stat-card-secondary stat-card-span">
+                <div class="leaderboard-header">
+                  <div>
+                    <p>Leaderboard</p>
+                    <strong id="rank-position">#--</strong>
+                  </div>
+                  <span class="stat-meta">Hydration queue</span>
+                </div>
+                <div id="leaderboard-list" class="leaderboard-list" aria-label="Hydration leaderboard"></div>
+              </article>
+            </section>
+          </section>
+
+          <section class="tab-panel" data-panel="scan">
+            <section class="panel panel-priority">
+              <p id="goal-message" class="status-note scan-note">
+                Essentials only: scan a photo, review the result, then log a RAIN.
+              </p>
+
+              <div class="scan-actions">
+                <label class="upload-button upload-button-large" for="photo-input">Choose photo</label>
+                <button id="analyze-photo" class="solid-button solid-button-large" type="button">
+                  Analyze photo
+                </button>
+              </div>
+
+              <div id="photo-preview-shell" class="photo-preview-shell">
+                <p id="photo-placeholder" class="empty-state">
+                  Add a well-lit photo to get started.
+                </p>
+                <img id="photo-preview" class="photo-preview hidden" alt="Uploaded hydration check" />
+              </div>
+
+              <div class="scan-result">
+                <div class="analysis-topline">
+                  <div id="analysis-swatch" class="analysis-swatch"></div>
+                  <div>
+                    <p class="eyebrow">Result</p>
+                    <strong id="analysis-label">No scan yet</strong>
+                    <p id="analysis-summary" class="support-copy">
+                      RAIN will estimate hydration from the dominant yellow tone.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <button id="share-result" class="ghost-button share-button-full" type="button" disabled>
+                Share result
+              </button>
+            </section>
+          </section>
+
+          <section class="tab-panel" data-panel="track">
+            <section class="panel panel-track">
+              <div class="section-heading">
+                <div>
+                  <p class="eyebrow">RAIN bottle</p>
+                  <h3>Log a RAIN</h3>
+                </div>
+              </div>
+              <div id="quick-add-grid" class="quick-add-grid quick-add-grid-single"></div>
+            </section>
+
+            <section class="panel">
+              <div class="section-heading">
+                <div>
+                  <p class="eyebrow">Trend</p>
+                  <h3>Last 7 days</h3>
+                </div>
+                <p class="mini-note"><span id="goal-inline">96</span> oz daily goal</p>
+              </div>
+              <div id="week-chart" class="week-chart" aria-label="Weekly hydration chart"></div>
+            </section>
+          </section>
+
+          <section class="tab-panel" data-panel="history">
+            <section class="panel">
+              <div class="section-heading">
+                <div>
+                  <p class="eyebrow">Today’s stream</p>
+                  <h3>Recent activity</h3>
+                </div>
+              </div>
+              <div id="entry-list" class="entry-list"></div>
+            </section>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
