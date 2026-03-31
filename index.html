@@ -176,6 +176,41 @@
       </section>
     </main>
 
+    <div id="leaderboard-modal" class="profile-modal hidden" aria-hidden="true">
+      <div id="leaderboard-modal-backdrop" class="profile-modal-backdrop"></div>
+      <section class="profile-modal-card" role="dialog" aria-modal="true" aria-labelledby="profile-name">
+        <button id="close-profile-modal" class="profile-close" type="button" aria-label="Close profile">
+          <i class="bi bi-x-lg" aria-hidden="true"></i>
+        </button>
+        <div class="profile-top">
+          <img id="profile-avatar" class="profile-avatar" alt="" />
+          <div class="profile-heading">
+            <p class="eyebrow">Hydration queue</p>
+            <h3 id="profile-name">Player</h3>
+            <p id="profile-rank" class="profile-rank">#--</p>
+          </div>
+        </div>
+        <div class="profile-score-card">
+          <span class="profile-score-label">Total score</span>
+          <strong id="profile-score">0</strong>
+        </div>
+        <div class="profile-breakdown">
+          <div class="profile-breakdown-row">
+            <span>RAINs logged</span>
+            <strong id="profile-breakdown-rains">0 pts</strong>
+          </div>
+          <div class="profile-breakdown-row">
+            <span>Hydrated days</span>
+            <strong id="profile-breakdown-days">0 pts</strong>
+          </div>
+          <div class="profile-breakdown-row">
+            <span>Healthy scans</span>
+            <strong id="profile-breakdown-scans">0 pts</strong>
+          </div>
+        </div>
+      </section>
+    </div>
+
     <script src="./app.js?v=20260331-1"></script>
   </body>
 </html>

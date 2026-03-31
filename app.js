@@ -62,6 +62,16 @@ const elements = {
   streakCalendar: document.getElementById("streak-calendar"),
   rankPosition: document.getElementById("rank-position"),
   leaderboardList: document.getElementById("leaderboard-list"),
+  leaderboardModal: document.getElementById("leaderboard-modal"),
+  leaderboardModalBackdrop: document.getElementById("leaderboard-modal-backdrop"),
+  closeProfileModal: document.getElementById("close-profile-modal"),
+  profileAvatar: document.getElementById("profile-avatar"),
+  profileName: document.getElementById("profile-name"),
+  profileRank: document.getElementById("profile-rank"),
+  profileScore: document.getElementById("profile-score"),
+  profileBreakdownRains: document.getElementById("profile-breakdown-rains"),
+  profileBreakdownDays: document.getElementById("profile-breakdown-days"),
+  profileBreakdownScans: document.getElementById("profile-breakdown-scans"),
   message: document.getElementById("goal-message"),
   quickAddGrid: document.getElementById("quick-add-grid"),
   weekChart: document.getElementById("week-chart"),
@@ -417,19 +427,84 @@ function getWeeklyHydrationScore() {
   }, 0);
 }
 
+function getWeeklyScoreBreakdown() {
+  return getLast7Days().reduce(
+    (totals, day) => {
+      totals.rains += day.total;
+      if (day.hydrated) {
+        totals.days += 30;
+      }
+      if (day.analysis && day.analysis.levelKey === "well") {
+        totals.scans += 20;
+      }
+      return totals;
+    },
+    { rains: 0, days: 0, scans: 0 }
+  );
+}
+
 function getLeaderboard() {
+  const yourBreakdown = getWeeklyScoreBreakdown();
   const yourScore = getWeeklyHydrationScore();
   const board = [
-    { name: "Ava", score: 812 },
-    { name: "Miles", score: 768 },
-    { name: "You", score: yourScore },
-    { name: "Sage", score: 706 },
-    { name: "Kai", score: 664 },
+    {
+      name: "Ava",
+      score: 812,
+      avatar: "https://i.pravatar.cc/240?img=32",
+      breakdown: { rains: 612, days: 120, scans: 80 },
+    },
+    {
+      name: "Miles",
+      score: 768,
+      avatar: "https://i.pravatar.cc/240?img=12",
+      breakdown: { rains: 568, days: 120, scans: 80 },
+    },
+    {
+      name: "You",
+      score: yourScore,
+      avatar:
+        "https://responsiblyrain.com/cdn/shop/files/Smaller_RAIN_BlueGroup.png?v=1760035164&width=400",
+      breakdown: yourBreakdown,
+    },
+    {
+      name: "Sage",
+      score: 706,
+      avatar: "https://i.pravatar.cc/240?img=5",
+      breakdown: { rains: 546, days: 100, scans: 60 },
+    },
+    {
+      name: "Kai",
+      score: 664,
+      avatar: "https://i.pravatar.cc/240?img=15",
+      breakdown: { rains: 504, days: 100, scans: 60 },
+    },
   ]
     .sort((a, b) => b.score - a.score)
     .map((entry, index) => ({ ...entry, rank: index + 1 }));
 
   return board;
+}
+
+function openLeaderboardProfile(entry) {
+  if (!entry) {
+    return;
+  }
+
+  elements.profileAvatar.src = entry.avatar;
+  elements.profileAvatar.alt = `${entry.name} profile image`;
+  elements.profileName.textContent = entry.name;
+  elements.profileRank.textContent = `Rank #${entry.rank}`;
+  elements.profileScore.textContent = entry.score;
+  elements.profileBreakdownRains.textContent = `${entry.breakdown.rains} pts`;
+  elements.profileBreakdownDays.textContent = `${entry.breakdown.days} pts`;
+  elements.profileBreakdownScans.textContent = `${entry.breakdown.scans} pts`;
+  elements.leaderboardModal.classList.remove("hidden");
+  elements.leaderboardModal.setAttribute("aria-hidden", "false");
+}
+
+function closeLeaderboardProfile() {
+  elements.leaderboardModal.classList.add("hidden");
+  elements.leaderboardModal.setAttribute("aria-hidden", "true");
 }
 
 function renderQuickAdds() {
@@ -670,7 +745,10 @@ function renderLeaderboard() {
     .join("");
 
   elements.leaderboardList.querySelectorAll(".leaderboard-row").forEach((row) => {
-    row.addEventListener("click", () => setActiveTab("history"));
+    row.addEventListener("click", () => {
+      const entry = board.find((item) => item.name === row.dataset.member);
+      openLeaderboardProfile(entry);
+    });
   });
 }
 
@@ -975,6 +1053,13 @@ elements.tabButtons.forEach((button) => {
 });
 elements.quickLogToday.addEventListener("click", () => addEntry(RAIN_BOTTLE_OZ));
 elements.quickScanToday.addEventListener("click", () => setActiveTab("scan"));
+elements.closeProfileModal.addEventListener("click", closeLeaderboardProfile);
+elements.leaderboardModalBackdrop.addEventListener("click", closeLeaderboardProfile);
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeLeaderboardProfile();
+  }
+});
 
 elements.analyzePhoto.addEventListener("click", analyzeCurrentPhoto);
 elements.shareResult.addEventListener("click", () => {
